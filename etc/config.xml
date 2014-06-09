@@ -1,0 +1,11 @@
+<config>
+    <global>
+        <blocks>
+            <googleanalytics>
+                <rewrite>
+                    <ga>Cammino_Googleanalytics_Block_Ga</ga>
+                </rewrite>
+            </googleanalytics>
+        </blocks>
+    </global>
+</config>

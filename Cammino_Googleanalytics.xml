@@ -1,0 +1,8 @@
+<config>
+    <modules>
+        <Cammino_Googleanalytics>
+            <active>true</active>
+            <codePool>community</codePool>
+        </Cammino_Googleanalytics>
+    </modules>
+</config>
