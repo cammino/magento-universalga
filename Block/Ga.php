@@ -22,7 +22,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
         
         return "
 ga('create','{$this->jsQuoteEscape($accountId)}', '{$domain}');
-ga('required', 'pageview');
+ga('require', 'displayfeatures');
 ga('send', 'pageview'{$optPageURL});
 ";
     }
