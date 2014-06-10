@@ -42,7 +42,7 @@ ga('send', 'pageview'{$optPageURL});
         $collection = Mage::getResourceModel('sales/order_collection')
             ->addFieldToFilter('entity_id', array('in' => $orderIds));
         
-        $result = array("ga('required', 'ecommerce', 'ecommerce.js');");
+        $result = array("ga('require', 'ecommerce', 'ecommerce.js');");
 
         foreach ($collection as $order) {
             if ($order->getIsVirtual()) {
@@ -53,9 +53,9 @@ ga('send', 'pageview'{$optPageURL});
             $result[] = sprintf("ga('ecommerce:addTransaction', {id: '%s', affiliation: '%s', revenue: '%s', tax: '%s', shipping: '%s' });",
                 $order->getIncrementId(),
                 $this->jsQuoteEscape(Mage::app()->getStore()->getFrontendName()),
-                $order->getBaseGrandTotal(),
-                $order->getBaseTaxAmount(),
-                $order->getBaseShippingAmount()
+                number_format($order->getBaseGrandTotal(), 2, '.', ''),
+                number_format($order->getBaseTaxAmount(), 2, '.', ''),
+                number_format($order->getBaseShippingAmount(), 2, '.', '')
             );
             foreach ($order->getAllVisibleItems() as $item) {
                 $result[] = sprintf("ga('ecommerce:addItem', {id: '%s', sku: '%s', name: '%s', category: '%s', price: '%s', quantity: '%s'});",
@@ -63,8 +63,8 @@ ga('send', 'pageview'{$optPageURL});
                     $this->jsQuoteEscape($item->getSku()),
                     $this->jsQuoteEscape($item->getName()),
                     null, // there is no "category" defined for the order item
-                    $item->getBasePrice(),
-                    $item->getQtyOrdered()
+                    number_format($item->getBasePrice(), 2, '.', ''),
+                    number_format($item->getQtyOrdered(), 2, '.', '')
                 );
             }
             $result[] = "ga('ecommerce:send');";
