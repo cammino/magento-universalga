@@ -17,11 +17,10 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
         if ($pageName && preg_match('/^\/.*/i', $pageName)) {
             $optPageURL = ", '{$this->jsQuoteEscape($pageName)}'";
         }
-        
-        $domain = $_SERVER['HTTP_HOST'];
+    
         
         return "
-ga('create','{$this->jsQuoteEscape($accountId)}', '{$domain}');
+ga('create','{$this->jsQuoteEscape($accountId)}', 'auto');
 ga('require', 'displayfeatures');
 ga('send', 'pageview'{$optPageURL});
 ";
