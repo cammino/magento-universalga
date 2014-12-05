@@ -7,5 +7,30 @@
                 </rewrite>
             </googleanalytics>
         </blocks>
+		<models>
+			<googleanalytics>
+				<class>Cammino_Googleanalytics_Model</class>
+			</googleanalytics>
+		</models>
     </global>
+    <frontend>
+		<events>
+			<controller_action_predispatch_checkout_cart_add>
+				<observers>
+					<googleanalytics_cart_add>
+						<class>googleanalytics/observer</class>
+						<method>addToCart</method>
+					</googleanalytics_cart_add>
+				</observers>
+			</controller_action_predispatch_checkout_cart_add>
+			<controller_action_predispatch_checkout_cart_delete>
+				<observers>
+					<googleanalytics_cart_delete>
+						<class>googleanalytics/observer</class>
+						<method>deleteFromCart</method>
+					</googleanalytics_cart_delete>
+				</observers>
+			</controller_action_predispatch_checkout_cart_delete>
+		</events>
+    </frontend>
 </config>
