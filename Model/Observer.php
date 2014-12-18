@@ -1,5 +1,5 @@
 <?php
-class Cammino_Googleanalytics_Model_Observer {
+class Cammino_Googleanalytics_Model_Observer extends Mage_GoogleAnalytics_Model_Observer {
 
 	public function addToCart() {
 		$productId = Mage::app()->getRequest()->getParam('product', 0);
