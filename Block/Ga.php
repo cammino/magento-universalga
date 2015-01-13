@@ -11,7 +11,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
             $optPageURL = ", '{$this->jsQuoteEscape($pageName)}'";
         }
 
-        $result[] = "ga('create','{$this->jsQuoteEscape($accountId)}', 'auto');";
+        $result[] = "ga('create','{$this->jsQuoteEscape($accountId)}');";
         $result[] = "ga('require', 'displayfeatures');";
         $result[] = "ga('require', 'ec');";
 
