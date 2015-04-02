@@ -49,7 +49,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
         $product = Mage::getModel('catalog/product')->load($itemSession->getId());
 
         $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s', 'quantity': %s });",
-            $this->jsQuoteEscape($product->getSku()),
+            $this->jsQuoteEscape($product->getId()),
             $this->jsQuoteEscape($product->getName()),
             $itemSession->getQty()
         );
@@ -69,7 +69,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
         $product = Mage::getModel('catalog/product')->load($itemSession->getId());
 
         $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s', 'quantity': %s });",
-            $this->jsQuoteEscape($product->getSku()),
+            $this->jsQuoteEscape($product->getId()),
             $this->jsQuoteEscape($product->getName()),
             $itemSession->getQty()
         );
@@ -93,13 +93,13 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
             if (Mage::registry('current_category') != null) {
                 $category = Mage::registry('current_category');
                 $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s', 'category': '%s' });",
-                    $this->jsQuoteEscape($product->getSku()),
+                    $this->jsQuoteEscape($product->getId()),
                     $this->jsQuoteEscape($product->getName()),
                     $this->jsQuoteEscape($category->getName())
                 );
             } else {
                 $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s' });",
-                    $this->jsQuoteEscape($product->getSku()),
+                    $this->jsQuoteEscape($product->getId()),
                     $this->jsQuoteEscape($product->getName())
                 );
             }
@@ -131,7 +131,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
             foreach ($order->getAllVisibleItems() as $item) {
                 $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s', 'price': '%s', 'quantity': %s });",
-                    $this->jsQuoteEscape($item->getSku()),
+                    $this->jsQuoteEscape($item->getId()),
                     $this->jsQuoteEscape($item->getName()),
                     number_format($item->getBasePrice(), 2, '.', ''),
                     number_format($item->getQtyOrdered(), 0, '', '')
