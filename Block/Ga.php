@@ -1,4 +1,5 @@
 <?php
+// home, product, cart, purchase
 class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 {
 
@@ -20,7 +21,23 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
         $result[] = $this->_getPurchaseCode();
 
         $result[] = "ga('send', 'pageview');";
-    
+        
+        $category = Mage::registry('current_category');
+        $this->getRequest()->getControllerName();
+
+        if(Mage::getBlockSingleton('page/html_header')->getIsHomePage()) {
+            $result[] = sprintf("
+                var google_tag_params = {
+                    ecomm_pagetype: \"home\"
+                }");
+        } else if ($this->getRequest()->getControllerName()=='category') {
+            $result[] = sprintf("
+                var google_tag_params = {
+                    ecomm_pagetype: \"category\",
+                    ecomm_category: \"%s\"
+                }", $this->jsQuoteEscape($category->getName()));
+        }
+
         return implode("\n", $result);
     }
 
@@ -55,6 +72,15 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
         );
 
         $result[] = "ga('ec:setAction', 'add');";
+
+        $productPrice = $this->getProductPrice($product);
+
+        $result[] = sprintf("
+            var google_tag_params = {
+                ecomm_prodid: \"%s\",
+                ecomm_pagetype: \"cart\",
+                ecomm_totalvalue: %s
+            }", $this->jsQuoteEscape($product->getId()), number_format($productPrice, 2, '.', ''));
 
         Mage::getModel('core/session')->unsGaAddProductToCart();
 
@@ -104,7 +130,15 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                 );
             }
 
+            $productPrice = $this->getProductPrice($product);
+
             $result[] = sprintf("ga('ec:setAction', 'detail');");
+            $result[] = sprintf("
+                var google_tag_params = {
+                    ecomm_prodid: \"%s\",
+                    ecomm_pagetype: \"product\",
+                    ecomm_totalvalue: %s
+                }", $this->jsQuoteEscape($product->getId()), number_format($productPrice, 2, '.', ''));
         }
 
         return implode("\n", $result);
@@ -129,6 +163,8 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                 $address = $order->getShippingAddress();
             }
 
+            $productIds = array();
+
             foreach ($order->getAllVisibleItems() as $item) {
                 $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s', 'price': '%s', 'quantity': %s });",
                     $this->jsQuoteEscape($item->getId()),
@@ -136,6 +172,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                     number_format($item->getBasePrice(), 2, '.', ''),
                     number_format($item->getQtyOrdered(), 0, '', '')
                 );
+                $productIds[] = $this->jsQuoteEscape($item->getId());
             }
 
             $result[] = sprintf("ga('ec:setAction', 'purchase', { 'id': '%s', 'affiliation': '%s', 'revenue': '%s', 'tax': '%s', 'shipping': '%s', 'coupon': '%s' });",
@@ -146,7 +183,53 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                 number_format($order->getBaseShippingAmount(), 2, '.', ''),
                 $this->jsQuoteEscape($order->getCouponCode())
             );
+
+            $productIds = implode(",", $productIds);
+
+            $result[] = sprintf("
+                var google_tag_params = {
+                    ecomm_prodid: [%s],
+                    ecomm_pagetype: \"purchase\",
+                    ecomm_totalvalue: %s
+                }", $productIds, number_format($order->getBaseGrandTotal(), 2, '.', ''));
+
         }
         return implode("\n", $result);
+    }
+
+    protected function getProductPrice($product) {
+
+        $productType = $product->getTypeId() != NULL ? $product->getTypeId() : $product->product_type;
+
+        if ($productType == "simple") {
+            return $product->getFinalPrice();
+        } else if ($productType == "grouped") {
+            $associated = $this->getAssociatedProducts($product);
+            $prices = array();
+            $minimal = 0;
+
+            foreach($associated as $item) {
+                if ($item->getFinalPrice() > 0) {
+                    array_push($prices, $item->getFinalPrice());
+                }
+            }
+
+            rsort($prices, SORT_NUMERIC);
+
+            if (count($prices) > 0) {
+                $minimal = end($prices);    
+            }
+
+            return $minimal;
+        } else {
+            return "";
+        }
+    }
+
+    protected function getAssociatedProducts($product) {
+        $collection = $product->getTypeInstance(true)->getAssociatedProductCollection($product)
+            ->addAttributeToSelect('*')
+            ->addAttributeToFilter('status', 1);
+        return $collection;
     }
 }
