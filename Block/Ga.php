@@ -167,12 +167,12 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
             foreach ($order->getAllVisibleItems() as $item) {
                 $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s', 'price': '%s', 'quantity': %s });",
-                    $this->jsQuoteEscape($item->getId()),
+                    $this->jsQuoteEscape($item->getProductId()),
                     $this->jsQuoteEscape($item->getName()),
                     number_format($item->getBasePrice(), 2, '.', ''),
                     number_format($item->getQtyOrdered(), 0, '', '')
                 );
-                $productIds[] = $this->jsQuoteEscape($item->getId());
+                $productIds[] = $this->jsQuoteEscape($item->getProductId());
             }
 
             $result[] = sprintf("ga('ec:setAction', 'purchase', { 'id': '%s', 'affiliation': '%s', 'revenue': '%s', 'tax': '%s', 'shipping': '%s', 'coupon': '%s' });",
