@@ -201,29 +201,50 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
         $productType = $product->getTypeId() != NULL ? $product->getTypeId() : $product->product_type;
 
-        if ($productType == "simple") {
-            return $product->getFinalPrice();
+        if ($productType == "simple" || $productType == "downloadable"){
+            return $product->getFinalPrice() ? $product->getFinalPrice() : 0;
         } else if ($productType == "grouped") {
-            $associated = $this->getAssociatedProducts($product);
-            $prices = array();
-            $minimal = 0;
-
-            foreach($associated as $item) {
-                if ($item->getFinalPrice() > 0) {
-                    array_push($prices, $item->getFinalPrice());
-                }
-            }
-
-            rsort($prices, SORT_NUMERIC);
-
-            if (count($prices) > 0) {
-                $minimal = end($prices);    
-            }
-
-            return $minimal;
+            return $this->getGroupedProductPrice($product);
+        } else if ($productType == "configurable") {
+            return $this->getConfigurableProductPrice($product);
         } else {
-            return "";
+            return 0;
         }
+    }
+
+    private function getConfigurableProductPrice($product) {
+        $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($product);
+        $simple_collection = $conf->getUsedProductCollection()->addAttributeToSelect('*')->addFilterByRequiredOptions();
+        $minVal = 9999999;
+        
+        foreach($simple_collection as $simple_product):
+            $price = $simple_product->getPrice();
+            if($price < $minVal && $price > 0):
+                $minVal = $price;
+            endif;
+        endforeach;
+
+        return $minVal != 9999999 ? $minVal : 0;
+    }    
+
+    private function getGroupedProductPrice($product) {
+        $associated = $this->getAssociatedProducts($product);
+        $prices = array();
+        $minimal = 0;
+
+        foreach($associated as $item) {
+            if ($item->getFinalPrice() > 0) {
+                array_push($prices, $item->getFinalPrice());
+            }
+        }
+
+        rsort($prices, SORT_NUMERIC);
+
+        if (count($prices) > 0) {
+            $minimal = end($prices);    
+        }
+
+        return $minimal;
     }
 
     protected function getAssociatedProducts($product) {
