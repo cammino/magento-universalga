@@ -33,12 +33,12 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
             $result[] = sprintf("
                 var google_tag_params = {
                     ecomm_pagetype: \"home\"
-                }");
+                };");
 
             $result[] = sprintf("
                 var mage_data_layer = {
                     page: \"home\"
-                }");
+                };");
 
         } else if ($this->getRequest()->getControllerName()=='category') {
 
@@ -46,7 +46,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                 var google_tag_params = {
                     ecomm_pagetype: \"category\",
                     ecomm_category: \"%s\"
-                }", $this->jsQuoteEscape($category->getName()));
+                };", $this->jsQuoteEscape($category->getName()));
 
             $result[] = sprintf("
                 var mage_data_layer = {
@@ -54,7 +54,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                     category: {
                         name: \"%s\"
                     }
-                }", $this->jsQuoteEscape($category->getName()));
+                };", $this->jsQuoteEscape($category->getName()));
 
         }
 
@@ -100,7 +100,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                 ecomm_prodid: \"%s\",
                 ecomm_pagetype: \"cart\",
                 ecomm_totalvalue: %s
-            }", $this->jsQuoteEscape($product->getId()), number_format($productPrice, 2, '.', ''));
+            };", $this->jsQuoteEscape($product->getId()), number_format($productPrice, 2, '.', ''));
 
         $result[] = sprintf("
             var mage_data_layer = {
@@ -108,7 +108,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                 cart: {
                     skus: \"%s\"
                 }
-            }", $this->jsQuoteEscape($product->getId()));
+            };", $this->jsQuoteEscape($product->getId()));
 
         Mage::getModel('core/session')->unsGaAddProductToCart();
 
@@ -166,7 +166,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                     ecomm_prodid: \"%s\",
                     ecomm_pagetype: \"product\",
                     ecomm_totalvalue: %s
-                }", $this->jsQuoteEscape($product->getId()), number_format($productPrice, 2, '.', ''));
+                };", $this->jsQuoteEscape($product->getId()), number_format($productPrice, 2, '.', ''));
 
             $result[] = sprintf("
                 var mage_data_layer = {
@@ -177,7 +177,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                         price: %s,
                         available: true
                     }
-                }", $this->jsQuoteEscape($product->getId()),
+                };", $this->jsQuoteEscape($product->getId()),
                     $this->jsQuoteEscape($product->getName()),
                     number_format($productPrice, 2, '.', '')
                 );
@@ -219,13 +219,13 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                 );
                 $productIds[] = $this->jsQuoteEscape($item->getProductId());
 
-                $result[] = sprintf("mage_data_layer_products[] = {
+                $result[] = sprintf("mage_data_layer_products.push({
                     sku: \"%s\",
                     name: \"%s\",
                     category: \"\",
                     price: %s,
                     quantity: %s
-                }", $this->jsQuoteEscape($item->getProductId()),
+                });", $this->jsQuoteEscape($item->getProductId()),
                     $this->jsQuoteEscape($item->getName()),
                     number_format($item->getBasePrice(), 2, '.', ''),
                     number_format($item->getQtyOrdered(), 0, '', '')
@@ -249,7 +249,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                     ecomm_prodid: [%s],
                     ecomm_pagetype: \"purchase\",
                     ecomm_totalvalue: %s
-                }", $productIds, number_format($order->getBaseGrandTotal(), 2, '.', ''));
+                };", $productIds, number_format($order->getBaseGrandTotal(), 2, '.', ''));
 
             $result[] = sprintf("
                 var mage_data_layer = {
@@ -261,7 +261,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                         paymentType: \"\",
                         items: mage_data_layer_products
                     }
-                }", $this->jsQuoteEscape($order->getIncrementId()),
+                };", $this->jsQuoteEscape($order->getIncrementId()),
                     number_format($order->getBaseGrandTotal(), 2, '.', '')
                 );
 
