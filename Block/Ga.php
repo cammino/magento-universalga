@@ -95,6 +95,8 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                     }
                 };", $this->jsQuoteEscape(implode(',', $productIds)));
         }
+
+        return implode("\n", $result);
     }
 
     protected function _getAddToCartCode()
