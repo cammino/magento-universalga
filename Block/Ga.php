@@ -68,13 +68,32 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
         if (Mage::app()->getFrontController()->getRequest()->getControllerName() == "cart") {
 
             if (Mage::getModel('core/session')->getGaAddProductToCart() != null) {
-                return $this->_getAddToCartCode();
+                $result[] = $this->_getAddToCartCode();
             } else if (Mage::getModel('core/session')->getGaDeleteProductFromCart() != null) {
-                return $this->_getDeleteFromCartCode();
+                $result[] = $this->_getDeleteFromCartCode();
             }
 
-        } else {
-            return "";
+            $result[] = $this->_getDataLayerCartItems();
+        }
+
+        return implode("\n", $result);
+    }
+
+    protected function _getDataLayerCartItems() {
+        $cart = Mage::getSingleton('checkout/cart');
+
+        if ($cart != null) {
+            $cartItems = $cart->getQuote()->getAllVisibleItems();
+            foreach ($cartItems as $item) {
+                $productIds[] = $this->jsQuoteEscape($item->getProductId());
+            }
+            $result[] = sprintf("
+                var mage_data_layer = {
+                    page: \"cart\",
+                    cart: {
+                        skus: \"%s\"
+                    }
+                };", $this->jsQuoteEscape(implode(',', $productIds)));
         }
     }
 
@@ -101,14 +120,6 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                 ecomm_pagetype: \"cart\",
                 ecomm_totalvalue: %s
             };", $this->jsQuoteEscape($product->getId()), number_format($productPrice, 2, '.', ''));
-
-        $result[] = sprintf("
-            var mage_data_layer = {
-                page: \"cart\",
-                cart: {
-                    skus: \"%s\"
-                }
-            };", $this->jsQuoteEscape($product->getId()));
 
         Mage::getModel('core/session')->unsGaAddProductToCart();
 
