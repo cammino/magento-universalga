@@ -58,6 +58,8 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
         }
 
+        $result[] = "dataLayer.push(mage_data_layer);";
+
         return implode("\n", $result);
     }
 
@@ -273,11 +275,13 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                         currency: \"BRL\",
                         paymentType: \"\",
                         discount: \"%s\",
+                        shipping: \"%s\",
                         items: mage_data_layer_products
                     }
                 };", $this->jsQuoteEscape($order->getIncrementId()),
                     number_format($order->getBaseGrandTotal(), 2, '.', ''),
-                    number_format($order->getDiscountAmount(), 2, '.', '')
+                    number_format($order->getDiscountAmount(), 2, '.', ''),
+                    number_format($order->getBaseShippingAmount(), 2, '.', '')
                 );
 
         }
