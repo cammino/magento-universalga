@@ -58,7 +58,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
         }
 
-        $result[] = "dataLayer.push(mage_data_layer);";
+        $result[] = "window.setTimeout(function() { dataLayer.push(mage_data_layer); }, 2500);";
 
         return implode("\n", $result);
     }
