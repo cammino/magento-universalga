@@ -84,18 +84,35 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
     protected function _getDataLayerCartItems() {
         $cart = Mage::getSingleton('checkout/cart');
 
+        $result[] = "var mage_data_layer_products = [];";
+
         if ($cart != null) {
             $cartItems = $cart->getQuote()->getAllVisibleItems();
             foreach ($cartItems as $item) {
                 $productIds[] = $this->jsQuoteEscape($item->getProductId());
+                $result[] = sprintf("mage_data_layer_products.push({
+                    sku: \"%s\",
+                    name: \"%s\",
+                    category: \"\",
+                    price: %s,
+                    quantity: %s
+                });", $this->jsQuoteEscape($item->getProductId()),
+                    $this->jsQuoteEscape($item->getName()),
+                    number_format($item->getBasePrice(), 2, '.', ''),
+                    number_format($item->getQty(), 0, '', '')
+                );
             }
             $result[] = sprintf("
                 var mage_data_layer = {
                     page: \"cart\",
                     cart: {
-                        skus: \"%s\"
+                        skus: \"%s\",
+                        items: mage_data_layer_products,
+                        total: %s
                     }
-                };", $this->jsQuoteEscape(implode(',', $productIds)));
+                };", $this->jsQuoteEscape(implode(',', $productIds)),
+                     number_format($cart->getQuote()->getBaseGrandTotal(), 2, '.', '')
+            );
         }
 
         return implode("\n", $result);
