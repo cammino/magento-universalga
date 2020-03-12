@@ -58,7 +58,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
         }
 
-        $result[] = "if (typeof(mage_data_layer) != 'undefined') { dataLayer.push(mage_data_layer); }";
+        $result[] = "if ((typeof(mage_data_layer) != 'undefined') && (typeof(dataLayer) != 'undefined')) { dataLayer.push(mage_data_layer); }";
 
         return implode("\n", $result);
     }
