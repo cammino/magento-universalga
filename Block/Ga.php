@@ -275,6 +275,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
             );
 
             $productIds = implode(",", $productIds);
+            $customerType = $this->getOrderCustomerType($order);
 
             $result[] = sprintf("
                 var google_tag_params = {
@@ -293,12 +294,16 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                         paymentType: \"\",
                         discount: \"%s\",
                         shipping: \"%s\",
+                        customer: {
+                            type: \"%s\"
+                        },
                         items: mage_data_layer_products
                     }
                 };", $this->jsQuoteEscape($order->getIncrementId()),
                     number_format($order->getBaseGrandTotal(), 2, '.', ''),
                     number_format($order->getDiscountAmount(), 2, '.', ''),
-                    number_format($order->getBaseShippingAmount(), 2, '.', '')
+                    number_format($order->getBaseShippingAmount(), 2, '.', ''),
+                    $customerType
                 );
 
         }
@@ -360,5 +365,15 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
             ->addAttributeToSelect('*')
             ->addAttributeToFilter('status', 1);
         return $collection;
+    }
+
+    private function getOrderCustomerType($order) {
+        try {
+            $customerTypeAttribute = Mage::getModel('eav/config')->getAttribute('customer', 'tipopessoa');
+            $customerType = $customerTypeAttribute->getSource()->getOptionText($order->getCustomerTipopessoa());
+            return $customerType;
+        } catch(Exception $ex) {
+            return '';
+        }   
     }
 }
