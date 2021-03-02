@@ -85,6 +85,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
         $cart = Mage::getSingleton('checkout/cart');
 
         $result[] = "var mage_data_layer_products = [];";
+        $productIds = [];
 
         if ($cart != null) {
             $cartItems = $cart->getQuote()->getAllVisibleItems();
