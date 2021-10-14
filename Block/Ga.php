@@ -21,6 +21,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
         $result[] = $custom->getCustomEvents();
         $result[] = $this->_getProductDetailsCode();
         $result[] = $this->_getCartCode();
+        $result[] = $this->_getCheckoutCode();
         $result[] = $this->_getPurchaseCode();
 
         $result[] = "ga('send', 'pageview');";
@@ -81,7 +82,18 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
         return implode("\n", $result);
     }
 
-    protected function _getDataLayerCartItems() {
+    protected function _getCheckoutCode()
+    {
+        $result = array();
+
+        if (Mage::app()->getRequest()->getRouteName() == "onestepcheckout") {
+            $result[] = $this->_getDataLayerCartItems('checkout');
+        }
+
+        return implode("\n", $result);
+    }
+
+    protected function _getDataLayerCartItems($page = 'cart') {
         $cart = Mage::getSingleton('checkout/cart');
 
         $result[] = "var mage_data_layer_products = [];";
@@ -105,7 +117,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
             }
             $result[] = sprintf("
                 var mage_data_layer = {
-                    page: \"cart\",
+                    page: \"$page\",
                     cart: {
                         skus: \"%s\",
                         items: mage_data_layer_products,
