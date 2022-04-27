@@ -14,9 +14,10 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
             $optPageURL = ", '{$this->jsQuoteEscape($pageName)}'";
         }
 
-        $result[] = "ga('create','{$this->jsQuoteEscape($accountId)}');";
-        $result[] = "ga('require', 'displayfeatures');";
-        $result[] = "ga('require', 'ec');";
+        // $result[] = "ga('create','{$this->jsQuoteEscape($accountId)}');";
+        $result[] = "gtag('config', '{$this->jsQuoteEscape($accountId)}')";
+        // $result[] = "ga('require', 'displayfeatures');";
+        // $result[] = "ga('require', 'ec');";
 
         $result[] = $custom->getCustomEvents();
         $result[] = $this->_getProductDetailsCode();
@@ -24,7 +25,8 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
         $result[] = $this->_getCheckoutCode();
         $result[] = $this->_getPurchaseCode();
 
-        $result[] = "ga('send', 'pageview');";
+        // $result[] = "ga('send', 'pageview');";
+        $result[] = "gtag('config', '{$this->jsQuoteEscape($accountId)}');";
         
         $category = Mage::registry('current_category');
         $this->getRequest()->getControllerName();
@@ -36,27 +38,35 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                     ecomm_pagetype: \"home\"
                 };");
 
+            // $result[] = sprintf("
+            //     var mage_data_layer = {
+            //         page: \"home\"
+            //     };");
             $result[] = sprintf("
                 var mage_data_layer = {
-                    page: \"home\"
+                    page_title: \"home\"
                 };");
 
         } else if ($this->getRequest()->getControllerName()=='category') {
-
             $result[] = sprintf("
                 var google_tag_params = {
                     ecomm_pagetype: \"category\",
                     ecomm_category: \"%s\"
                 };", $this->jsQuoteEscape($category->getName()));
 
+            // $result[] = sprintf("
+            //     var mage_data_layer = {
+            //         page: \"category\",
+            //         category: {
+            //             name: \"%s\"
+            //         }
+            //     };", $this->jsQuoteEscape($category->getName()));
             $result[] = sprintf("
                 var mage_data_layer = {
-                    page: \"category\",
-                    category: {
-                        name: \"%s\"
-                    }
-                };", $this->jsQuoteEscape($category->getName()));
-
+                    page_title: \"category\",
+                    page_location: \"%s\",
+                    page_path: \"%s\"
+                };", $this->jsQuoteEscape($category->getName()), $this->jsQuoteEscape($category->getUrl()));
         }
 
         $result[] = "if ((typeof(mage_data_layer) != 'undefined') && (typeof(dataLayer) != 'undefined')) { dataLayer.push(mage_data_layer); }";
@@ -101,12 +111,25 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
         if ($cart != null) {
             $cartItems = $cart->getQuote()->getAllVisibleItems();
+
             foreach ($cartItems as $item) {
                 $productIds[] = $this->jsQuoteEscape($item->getProductId());
+
+                // $result[] = sprintf("mage_data_layer_products.push({
+                //     sku: \"%s\",
+                //     name: \"%s\",
+                //     category: \"\",
+                //     price: %s,
+                //     quantity: %s
+                // });", $this->jsQuoteEscape($item->getProductId()),
+                //     $this->jsQuoteEscape($item->getName()),
+                //     number_format($item->getBasePrice(), 2, '.', ''),
+                //     number_format($item->getQty(), 0, '', '')
+                // );
                 $result[] = sprintf("mage_data_layer_products.push({
-                    sku: \"%s\",
-                    name: \"%s\",
-                    category: \"\",
+                    item_id: \"%s\",
+                    item_name: \"%s\",
+                    item_category: \"\",
                     price: %s,
                     quantity: %s
                 });", $this->jsQuoteEscape($item->getProductId()),
@@ -115,9 +138,20 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
                     number_format($item->getQty(), 0, '', '')
                 );
             }
+            // $result[] = sprintf("
+            //     var mage_data_layer = {
+            //         page: \"$page\",
+            //         cart: {
+            //             skus: \"%s\",
+            //             items: mage_data_layer_products,
+            //             total: %s
+            //         }
+            //     };", $this->jsQuoteEscape(implode(',', $productIds)),
+            //          number_format($cart->getQuote()->getBaseGrandTotal(), 2, '.', '')
+            // );
             $result[] = sprintf("
                 var mage_data_layer = {
-                    page: \"$page\",
+                    page_title: \"cart\",
                     cart: {
                         skus: \"%s\",
                         items: mage_data_layer_products,
@@ -133,18 +167,30 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
     protected function _getAddToCartCode()
     {
+        $cart = Mage::getSingleton('checkout/cart');
+
         $result = array();
         $itemSession = Mage::getModel('core/session')->getGaAddProductToCart();
 
         $product = Mage::getModel('catalog/product')->load($itemSession->getId());
 
-        $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s', 'quantity': %s });",
+        // $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s', 'quantity': %s });",
+        //     $this->jsQuoteEscape($product->getId()),
+        //     $this->jsQuoteEscape($product->getName()),
+        //     $itemSession->getQty()
+        // );
+
+        $result[] = sprintf("gtag('event', 'add_to_cart', { 'currency': '%s', 'value': '%s', 'items': [
+            { 'item_id': '%s', 'item_name': '%s', 'quantity': '%s' }
+        ] });",
+            'BRL',
+            number_format($cart->getQuote()->getBaseGrandTotal(), 2, '.', ''),
             $this->jsQuoteEscape($product->getId()),
             $this->jsQuoteEscape($product->getName()),
             $itemSession->getQty()
         );
 
-        $result[] = "ga('ec:setAction', 'add');";
+        // $result[] = "ga('ec:setAction', 'add');";
 
         $productPrice = $this->getProductPrice($product);
 
@@ -162,18 +208,29 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
     protected function _getDeleteFromCartCode()
     {
+        $cart = Mage::getSingleton('checkout/cart');
         $result = array();
         $itemSession = Mage::getModel('core/session')->getGaDeleteProductFromCart();
 
         $product = Mage::getModel('catalog/product')->load($itemSession->getId());
 
-        $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s', 'quantity': %s });",
+        // $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s', 'quantity': %s });",
+        //     $this->jsQuoteEscape($product->getId()),
+        //     $this->jsQuoteEscape($product->getName()),
+        //     $itemSession->getQty()
+        // );
+
+        $result[] = sprintf("gtag('event', 'remove_from_cart', { 'currency': '%s', 'value': '%s', 'items': [
+            { 'item_id': '%s', 'item_name': '%s', 'quantity': '%s' }
+        ] });",
+            'BRL',
+            number_format($cart->getQuote()->getBaseGrandTotal(), 2, '.', ''),
             $this->jsQuoteEscape($product->getId()),
             $this->jsQuoteEscape($product->getName()),
             $itemSession->getQty()
         );
 
-        $result[] = "ga('ec:setAction', 'remove');";
+        // $result[] = "ga('ec:setAction', 'remove');";
 
         Mage::getModel('core/session')->unsGaDeleteProductFromCart();
 
@@ -182,6 +239,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
     protected function _getProductDetailsCode()
     {
+        $cart = Mage::getSingleton('checkout/cart');
         $result = array();
 
         if ((Mage::app()->getFrontController()->getRequest()->getControllerName() == "product") &&
@@ -191,13 +249,30 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
             if (Mage::registry('current_category') != null) {
                 $category = Mage::registry('current_category');
-                $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s', 'category': '%s' });",
+                // $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s', 'category': '%s' });",
+                //     $this->jsQuoteEscape($product->getId()),
+                //     $this->jsQuoteEscape($product->getName()),
+                //     $this->jsQuoteEscape($category->getName())
+                // );
+                $result[] = sprintf("gtag('event', 'view_item', { 'currency': '%s', 'value': '%s', 'items': [
+                    { 'item_id': '%s', 'item_name': '%s', 'category': '%s' }
+                ] });",
+                    'BRL',
+                    number_format($cart->getQuote()->getBaseGrandTotal(), 2, '.', ''),
                     $this->jsQuoteEscape($product->getId()),
                     $this->jsQuoteEscape($product->getName()),
                     $this->jsQuoteEscape($category->getName())
                 );
             } else {
-                $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s' });",
+                // $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s' });",
+                //     $this->jsQuoteEscape($product->getId()),
+                //     $this->jsQuoteEscape($product->getName())
+                // );
+                $result[] = sprintf("gtag('event', 'view_item', { 'currency': '%s', 'value': '%s', 'items': [
+                    { 'item_id': '%s', 'item_name': '%s' }
+                ] });",
+                    'BRL',
+                    number_format($cart->getQuote()->getBaseGrandTotal(), 2, '.', ''),
                     $this->jsQuoteEscape($product->getId()),
                     $this->jsQuoteEscape($product->getName())
                 );
@@ -234,6 +309,7 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
     protected function _getPurchaseCode()
     {
+        $cart = Mage::getSingleton('checkout/cart');
         $orderIds = $this->getOrderIds();
 
         if (empty($orderIds) || !is_array($orderIds)) {
@@ -256,12 +332,23 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
             $result[] = "var mage_data_layer_products = [];";
 
             foreach ($order->getAllVisibleItems() as $item) {
-                $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s', 'price': '%s', 'quantity': %s });",
-                    $this->jsQuoteEscape($item->getProductId()),
+                // $result[] = sprintf("ga('ec:addProduct', { 'id': '%s', 'name': '%s', 'price': '%s', 'quantity': %s });",
+                //     $this->jsQuoteEscape($item->getProductId()),
+                //     $this->jsQuoteEscape($item->getName()),
+                //     number_format($item->getBasePrice(), 2, '.', ''),
+                //     number_format($item->getQtyOrdered(), 0, '', '')
+                // );
+                $result[] = sprintf("gtag('event', 'view_item', { 'currency': '%s', 'value': '%s', 'items': [
+                    { 'item_id': '%s', 'item_name': '%s' }
+                ] });",
+                    'BRL',
+                    number_format($order->getBaseGrandTotal(), 2, '.', ''),
+                    $this->jsQuoteEscape($item->getId()),
                     $this->jsQuoteEscape($item->getName()),
                     number_format($item->getBasePrice(), 2, '.', ''),
                     number_format($item->getQtyOrdered(), 0, '', '')
                 );
+
                 $productIds[] = $this->jsQuoteEscape($item->getProductId());
 
                 $result[] = sprintf("mage_data_layer_products.push({
@@ -278,13 +365,32 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
             }
 
-            $result[] = sprintf("ga('ec:setAction', 'purchase', { 'id': '%s', 'affiliation': '%s', 'revenue': '%s', 'tax': '%s', 'shipping': '%s', 'coupon': '%s' });",
+            // $result[] = sprintf("ga('ec:setAction', 'purchase', { 'id': '%s', 'affiliation': '%s', 'revenue': '%s', 'tax': '%s', 'shipping': '%s', 'coupon': '%s' });",
+            //     $order->getIncrementId(),
+            //     $this->jsQuoteEscape(Mage::app()->getStore()->getFrontendName()),
+            //     number_format($order->getBaseGrandTotal(), 2, '.', ''),
+            //     number_format($order->getBaseTaxAmount(), 2, '.', ''),
+            //     number_format($order->getBaseShippingAmount(), 2, '.', ''),
+            //     $this->jsQuoteEscape($order->getCouponCode())
+            // );
+
+            $result[] = sprintf(
+                "gtag('event', 'purchase', {
+                    currency: \"%s\",
+                    transaction_id: \"%s\",
+                    value: \"%s\",
+                    affiliation: \"%s\",
+                    coupon: \"%s\",
+                    shipping: \"%s\",
+                    tax: \"%s\",
+                })",
+                "BRL",
                 $order->getIncrementId(),
-                $this->jsQuoteEscape(Mage::app()->getStore()->getFrontendName()),
                 number_format($order->getBaseGrandTotal(), 2, '.', ''),
-                number_format($order->getBaseTaxAmount(), 2, '.', ''),
+                $this->jsQuoteEscape(Mage::app()->getStore()->getFrontendName()),
+                $this->jsQuoteEscape($order->getCouponCode()),
                 number_format($order->getBaseShippingAmount(), 2, '.', ''),
-                $this->jsQuoteEscape($order->getCouponCode())
+                number_format($order->getBaseTaxAmount(), 2, '.', '')
             );
 
             $productIds = implode(",", $productIds);
