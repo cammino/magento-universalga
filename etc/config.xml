@@ -11,6 +11,9 @@
 		<models>
 			<googleanalytics>
 				<class>Cammino_Googleanalytics_Model</class>
+				<rewrite>
+					<system_config_source_type>Cammino_Googleanalytics_Model_System_Config_Source_Type</system_config_source_type>
+				</rewrite>
 			</googleanalytics>
 		</models>
     </global>
