@@ -11,12 +11,13 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
     }
 
     public function _getPageTrackingCode() {
+        $accountId = $this->getAccountId();
         if ($this->getType() == 'G4') {
             $block = Mage::getBlockSingleton('googleanalytics/ga_g4');
-            return $block->_getPageTrackingCode();
+            return $block->_getPageTrackingCode($accountId);
         } else {
             $block = Mage::getBlockSingleton('googleanalytics/ga_ua');
-            return $block->_getPageTrackingCode();
+            return $block->_getPageTrackingCode($accountId);
         }
     }
 
