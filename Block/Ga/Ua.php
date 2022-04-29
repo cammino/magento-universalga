@@ -1,5 +1,5 @@
 <?php
-class Cammino_Googleanalytics_Model_Ua extends Cammino_Googleanalytics_Block_Ga
+class Cammino_Googleanalytics_Block_Ga_Ua extends Cammino_Googleanalytics_Block_Ga
 {
 
     public function _getPageTrackingCode($accountId)
