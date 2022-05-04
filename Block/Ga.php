@@ -4,8 +4,8 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
     public $_orderIds;
 
-    public function setOrderIds() {
-        $this->_orderIds;
+    public function setOrderIds($orderIds) {
+        $this->_orderIds = $orderIds;
     }
 
     public function getType() {
