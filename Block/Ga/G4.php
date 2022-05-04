@@ -279,23 +279,13 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
             $result[] = "var mage_data_layer_products = [];";
 
             foreach ($order->getAllVisibleItems() as $item) {
-                $result[] = sprintf("gtag('event', 'view_item', { 'currency': '%s', 'value': '%s', 'items': [
-                    { 'item_id': '%s', 'item_name': '%s' }
-                ] });",
-                    'BRL',
-                    number_format($order->getBaseGrandTotal(), 2, '.', ''),
-                    $this->jsQuoteEscape($item->getId()),
-                    $this->jsQuoteEscape($item->getName()),
-                    number_format($item->getBasePrice(), 2, '.', ''),
-                    number_format($item->getQtyOrdered(), 0, '', '')
-                );
 
                 $productIds[] = $this->jsQuoteEscape($item->getProductId());
 
                 $result[] = sprintf("mage_data_layer_products.push({
-                    sku: \"%s\",
-                    name: \"%s\",
-                    category: \"\",
+                    item_id: \"%s\",
+                    item_name: \"%s\",
+                    item_category: \"\",
                     price: %s,
                     quantity: %s
                 });", $this->jsQuoteEscape($item->getProductId()),
@@ -315,6 +305,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                     coupon: \"%s\",
                     shipping: \"%s\",
                     tax: \"%s\",
+                    items: mage_data_layer_products
                 });",
                 "BRL",
                 $order->getIncrementId(),
