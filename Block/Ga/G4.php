@@ -257,8 +257,11 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
 
     public function _getPurchaseCode()
     {
-        $cart = Mage::getSingleton('checkout/cart');
-        $orderIds = $this->getOrderIds();
+        $orderIds = Mage::getSingleton('core/session')->getOrderIds(true);
+
+        if (!empty(strval($orderIds)) && !is_array($orderIds)) {
+            $orderIds = implode(', ', $orderIds);
+        }
 
         if (empty($orderIds) || !is_array($orderIds)) {
             return;
