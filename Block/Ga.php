@@ -4,10 +4,13 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
 
     public $_orderIds;
 
-    public function setOrderIds($orderIds) {
+    public function _setOrderIds($orderIds) {
         $this->_orderIds = $orderIds;
     }
 
+    public function _getOrderIds() {
+        return $this->_orderIds;
+    }
     public function getType() {
         return Mage::getStoreConfig(Mage_GoogleAnalytics_Helper_Data::XML_PATH_TYPE);
     }
@@ -20,11 +23,11 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
         $accountId = $this->getAccountId();
         if ($this->getType() == 'G4') {
             $block = Mage::getBlockSingleton('googleanalytics/ga_g4');
-            $block->setOrderIds($this->getOrderIds());
+            $block->_setOrderIds($this->getOrderIds());
             return $block->_getPageTrackingCode($accountId);
         } else {
             $block = Mage::getBlockSingleton('googleanalytics/ga_ua');
-            $block->setOrderIds($this->getOrderIds());
+            $block->_setOrderIds($this->getOrderIds());
             return $block->_getPageTrackingCode($accountId);
         }
     }

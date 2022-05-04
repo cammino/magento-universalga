@@ -233,7 +233,7 @@ class Cammino_Googleanalytics_Block_Ga_Ua extends Cammino_Googleanalytics_Block_
 
     public function _getPurchaseCode()
     {
-        $orderIds = $this->_orderIds;
+        $orderIds = $this->_getOrderIds();
 
         if (empty($orderIds) || !is_array($orderIds)) {
             return;
