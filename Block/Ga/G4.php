@@ -110,6 +110,18 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                 );
             }
 
+            if ($page == 'cart') {
+                $result[] = sprintf("gtag('event', 'view_cart', { 'currency': '%s', 'value': '%s', 'items': mage_data_layer_products });",
+                    'BRL',
+                    number_format($cart->getQuote()->getBaseGrandTotal(), 2, '.', '')
+                );
+            } else if ($page == 'checkout') {
+                $result[] = sprintf("gtag('event', 'begin_checkout', { 'currency': '%s', 'value': '%s', 'items': mage_data_layer_products });",
+                    'BRL',
+                    number_format($cart->getQuote()->getBaseGrandTotal(), 2, '.', '')
+                );
+            }
+
             $result[] = sprintf("
                 var mage_data_layer = {
                     page_title: \"cart\",
