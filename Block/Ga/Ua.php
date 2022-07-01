@@ -320,10 +320,10 @@ class Cammino_Googleanalytics_Block_Ga_Ua extends Cammino_Googleanalytics_Block_
 
             $result[] = sprintf("
                 dataLayer.push({
-                    event: 'purchase',
+                    event: \"purchase\",
                     value: \"%s\",
-                    transactionID: '\"%s\"',
-                    email: '\"%s\"'
+                    transactionID: \"%s\",
+                    email: \"%s\"
                 });", number_format($order->getBaseGrandTotal(), 2, '.', ''),
                     $this->jsQuoteEscape($order->getIncrementId()),
                     $this->jsQuoteEscape($order->getCustomerEmail())
