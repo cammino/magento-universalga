@@ -318,6 +318,17 @@ class Cammino_Googleanalytics_Block_Ga_Ua extends Cammino_Googleanalytics_Block_
                     $customerType
                 );
 
+            $result[] = sprintf("
+                dataLayer.push({
+                    event: 'purchase',
+                    value: \"%s\",
+                    transactionID: '\"%s\"',
+                    email: '\"%s\"'
+                });", number_format($order->getBaseGrandTotal(), 2, '.', ''),
+                    $this->jsQuoteEscape($order->getIncrementId()),
+                    $this->jsQuoteEscape($order->getCustomerEmail())
+                );
+
         }
         return implode("\n", $result);
     }
