@@ -32,4 +32,22 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
         }
     }
 
+    public function getProductCategory($item) {
+        $product = Mage::getModel('catalog/product')->load($item->getProductId());
+        $categoryIds = $product->getCategoryIds();
+        $mainCategory = 2;
+        foreach($categoryIds as $id) {
+            if ((intval($id) != 1) && (intval($id) != 2)) {
+                $mainCategory = $id;
+                break;
+            }
+        }
+        $category = Mage::getModel('catalog/category')->load($mainCategory);
+        if ($category) {
+            return $category->getName();    
+        } else {
+            return '';
+        }
+    }
+
 }

@@ -262,15 +262,17 @@ class Cammino_Googleanalytics_Block_Ga_Ua extends Cammino_Googleanalytics_Block_
                     number_format($item->getQtyOrdered(), 0, '', '')
                 );
                 $productIds[] = $this->jsQuoteEscape($item->getProductId());
+                $productCategory = $this->getProductCategory($item);
 
                 $result[] = sprintf("mage_data_layer_products.push({
                     sku: \"%s\",
                     name: \"%s\",
-                    category: \"\",
+                    category: \"%s\",
                     price: %s,
                     quantity: %s
                 });", $this->jsQuoteEscape($item->getProductId()),
                     $this->jsQuoteEscape($item->getName()),
+                    $this->jsQuoteEscape($productCategory),
                     number_format($item->getBasePrice(), 2, '.', ''),
                     number_format($item->getQtyOrdered(), 0, '', '')
                 );
@@ -288,6 +290,7 @@ class Cammino_Googleanalytics_Block_Ga_Ua extends Cammino_Googleanalytics_Block_
 
             $productIds = implode(",", $productIds);
             $customerType = $this->getOrderCustomerType($order);
+            $customerEmail = $order->getBillingAddress()->getEmail();
 
             $result[] = sprintf("
                 var google_tag_params = {
@@ -307,7 +310,8 @@ class Cammino_Googleanalytics_Block_Ga_Ua extends Cammino_Googleanalytics_Block_
                         discount: \"%s\",
                         shipping: \"%s\",
                         customer: {
-                            type: \"%s\"
+                            type: \"%s\",
+                            email: \"%s\"
                         },
                         items: mage_data_layer_products
                     }
@@ -315,7 +319,8 @@ class Cammino_Googleanalytics_Block_Ga_Ua extends Cammino_Googleanalytics_Block_
                     number_format($order->getBaseGrandTotal(), 2, '.', ''),
                     number_format($order->getDiscountAmount(), 2, '.', ''),
                     number_format($order->getBaseShippingAmount(), 2, '.', ''),
-                    $customerType
+                    $customerType,
+                    $customerEmail
                 );
 
             $result[] = sprintf("
