@@ -291,6 +291,7 @@ class Cammino_Googleanalytics_Block_Ga_Ua extends Cammino_Googleanalytics_Block_
             $productIds = implode(",", $productIds);
             $customerType = $this->getOrderCustomerType($order);
             $customerEmail = $order->getBillingAddress()->getEmail();
+            $customerDob = $order->getCustomer()->getDob();
 
             $result[] = sprintf("
                 var google_tag_params = {
@@ -311,7 +312,8 @@ class Cammino_Googleanalytics_Block_Ga_Ua extends Cammino_Googleanalytics_Block_
                         shipping: \"%s\",
                         customer: {
                             type: \"%s\",
-                            email: \"%s\"
+                            email: \"%s\",
+                            birthday: \"%s\"
                         },
                         items: mage_data_layer_products
                     }
@@ -320,7 +322,8 @@ class Cammino_Googleanalytics_Block_Ga_Ua extends Cammino_Googleanalytics_Block_
                     number_format($order->getDiscountAmount(), 2, '.', ''),
                     number_format($order->getBaseShippingAmount(), 2, '.', ''),
                     $customerType,
-                    $customerEmail
+                    $customerEmail,
+                    $customerDob
                 );
 
             $result[] = sprintf("
