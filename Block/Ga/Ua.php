@@ -291,7 +291,8 @@ class Cammino_Googleanalytics_Block_Ga_Ua extends Cammino_Googleanalytics_Block_
             $productIds = implode(",", $productIds);
             $customerType = $this->getOrderCustomerType($order);
             $customerEmail = $order->getBillingAddress()->getEmail();
-            $customerDob = $order->getCustomer()->getDob();
+            $customer = Mage::getModel('customer/customer')->load($order->getCustomerId());
+            $customerDob = $customer->getDob();
 
             $result[] = sprintf("
                 var google_tag_params = {
