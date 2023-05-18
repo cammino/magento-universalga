@@ -60,7 +60,8 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
     {
         $result = array();
 
-        if (Mage::app()->getFrontController()->getRequest()->getControllerName() == "cart") {
+        if ((Mage::app()->getFrontController()->getRequest()->getControllerName() == "cart") ||
+            (strrpos(Mage::helper('core/url')->getCurrentUrl(), 'amcart/ajax') !== false)) {
 
             if (Mage::getModel('core/session')->getGaAddProductToCart() != null) {
                 $result[] = $this->_getAddToCartCode();
