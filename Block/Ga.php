@@ -50,4 +50,14 @@ class Cammino_Googleanalytics_Block_Ga extends Mage_GoogleAnalytics_Block_Ga
         }
     }
 
+    public function getOrderCustomerType($order) {
+        try {
+            $customerTypeAttribute = Mage::getModel('eav/config')->getAttribute('customer', 'tipopessoa');
+            $customerType = $customerTypeAttribute->getSource()->getOptionText($order->getCustomerTipopessoa());
+            return $customerType;
+        } catch(Exception $ex) {
+            return '';
+        }   
+    }
+
 }
