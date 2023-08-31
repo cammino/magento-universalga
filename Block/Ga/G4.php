@@ -96,19 +96,39 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
             $cartItems = $cart->getQuote()->getAllVisibleItems();
 
             foreach ($cartItems as $item) {
-                $productIds[] = $this->jsQuoteEscape($item->getProductId());
+                $dataLayerSku = Mage::getStoreConfig('google/analytics/googleanalyticssku');
+        
+                if ($dataLayerSku) {
+                    $productIds[] = $this->jsQuoteEscape($item->getSku());
 
-                $result[] = sprintf("mage_data_layer_products.push({
-                    item_id: \"%s\",
-                    item_name: \"%s\",
-                    item_category: \"\",
-                    price: %s,
-                    quantity: %s
-                });", $this->jsQuoteEscape($item->getProductId()),
-                    $this->jsQuoteEscape($item->getName()),
-                    number_format($item->getBasePrice(), 2, '.', ''),
-                    number_format($item->getQty(), 0, '', '')
-                );
+                    $result[] = sprintf("mage_data_layer_products.push({
+                        item_id: \"%s\",
+                        item_name: \"%s\",
+                        item_category: \"\",
+                        price: %s,
+                        currency: \"BRL\",
+                        quantity: %s
+                    });", $this->jsQuoteEscape($item->getSku()),
+                        $this->jsQuoteEscape($item->getName()),
+                        number_format($item->getBasePrice(), 2, '.', ''),
+                        number_format($item->getQty(), 0, '', '')
+                    );
+                } else {
+                    $productIds[] = $this->jsQuoteEscape($item->getProductId());
+
+                    $result[] = sprintf("mage_data_layer_products.push({
+                        item_id: \"%s\",
+                        item_name: \"%s\",
+                        item_category: \"\",
+                        price: %s,
+                        currency: \"BRL\",
+                        quantity: %s
+                    });", $this->jsQuoteEscape($item->getProductId()),
+                        $this->jsQuoteEscape($item->getName()),
+                        number_format($item->getBasePrice(), 2, '.', ''),
+                        number_format($item->getQty(), 0, '', '')
+                    );
+                }
             }
 
             if ($page == 'cart') {
@@ -280,23 +300,39 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
             $result[] = "var mage_data_layer_products = [];";
 
             foreach ($order->getAllVisibleItems() as $item) {
+                $dataLayerSku = Mage::getStoreConfig('google/analytics/googleanalyticssku');
 
-                $productIds[] = $this->jsQuoteEscape($item->getProductId());
-                $productCategory = $this->getProductCategory($item);
+                if ($dataLayerSku) {
+                    $productIds[] = $this->jsQuoteEscape($item->getSku());
 
-                $result[] = sprintf("mage_data_layer_products.push({
-                    item_id: \"%s\",
-                    item_name: \"%s\",
-                    item_category: \"%s\",
-                    price: %s,
-                    quantity: %s
-                });", $this->jsQuoteEscape($item->getProductId()),
-                    $this->jsQuoteEscape($item->getName()),
-                    $this->jsQuoteEscape($productCategory),
-                    number_format($item->getBasePrice(), 2, '.', ''),
-                    number_format($item->getQtyOrdered(), 0, '', '')
-                );
+                    $result[] = sprintf("mage_data_layer_products.push({
+                        item_id: \"%s\",
+                        item_name: \"%s\",
+                        item_category: \"\",
+                        price: %s,
+                        currency: \"BRL\",
+                        quantity: %s
+                    });", $this->jsQuoteEscape($item->getSku()),
+                        $this->jsQuoteEscape($item->getName()),
+                        number_format($item->getBasePrice(), 2, '.', ''),
+                        number_format($item->getQtyOrdered(), 0, '', '')
+                    );
+                } else {
+                    $productIds[] = $this->jsQuoteEscape($item->getProductId());
 
+                    $result[] = sprintf("mage_data_layer_products.push({
+                        item_id: \"%s\",
+                        item_name: \"%s\",
+                        item_category: \"\",
+                        price: %s,
+                        currency: \"BRL\",
+                        quantity: %s
+                    });", $this->jsQuoteEscape($item->getProductId()),
+                        $this->jsQuoteEscape($item->getName()),
+                        number_format($item->getBasePrice(), 2, '.', ''),
+                        number_format($item->getQtyOrdered(), 0, '', '')
+                    );
+                }
             }
 
             $result[] = sprintf(
