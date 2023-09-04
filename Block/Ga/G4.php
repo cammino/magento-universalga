@@ -115,12 +115,12 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
             }
 
             if ($page == 'cart') {
-                $result[] = sprintf("gtag('event', 'view_cart', { 'currency': '%s', 'value': '%s', 'items': mage_data_layer_products });",
+                $result[] = sprintf("gtag('event', 'view_cart', { 'currency': '%s', 'value': %s, 'items': mage_data_layer_products });",
                     'BRL',
                     number_format($cart->getQuote()->getBaseGrandTotal(), 2, '.', '')
                 );
             } else if ($page == 'checkout') {
-                $result[] = sprintf("gtag('event', 'begin_checkout', { 'currency': '%s', 'value': '%s', 'items': mage_data_layer_products });",
+                $result[] = sprintf("gtag('event', 'begin_checkout', { 'currency': '%s', 'value': %s, 'items': mage_data_layer_products });",
                     'BRL',
                     number_format($cart->getQuote()->getBaseGrandTotal(), 2, '.', '')
                 );
@@ -151,8 +151,8 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
 
         $product = Mage::getModel('catalog/product')->load($itemSession->getId());
 
-        $result[] = sprintf("gtag('event', 'add_to_cart', { 'currency': '%s', 'value': '%s', 'items': [
-            { 'item_id': '%s', 'item_name': '%s', 'quantity': '%s' }
+        $result[] = sprintf("gtag('event', 'add_to_cart', { 'currency': '%s', 'value': %s, 'items': [
+            { 'item_id': '%s', 'item_name': '%s', 'quantity': %s }
         ] });",
             'BRL',
             number_format($cart->getQuote()->getBaseGrandTotal(), 2, '.', ''),
@@ -183,8 +183,8 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
 
         $product = Mage::getModel('catalog/product')->load($itemSession->getId());
 
-        $result[] = sprintf("gtag('event', 'remove_from_cart', { 'currency': '%s', 'value': '%s', 'items': [
-            { 'item_id': '%s', 'item_name': '%s', 'quantity': '%s' }
+        $result[] = sprintf("gtag('event', 'remove_from_cart', { 'currency': '%s', 'value': %s, 'items': [
+            { 'item_id': '%s', 'item_name': '%s', 'quantity': %s }
         ] });",
             'BRL',
             number_format($cart->getQuote()->getBaseGrandTotal(), 2, '.', ''),
@@ -211,7 +211,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
             if (Mage::registry('current_category') != null) {
                 $category = Mage::registry('current_category');
 
-                $result[] = sprintf("gtag('event', 'view_item', { 'currency': '%s', 'value': '%s', 'items': [
+                $result[] = sprintf("gtag('event', 'view_item', { 'currency': '%s', 'value': %s, 'items': [
                     { 'item_id': '%s', 'item_name': '%s', 'category': '%s' }
                 ] });",
                     'BRL',
@@ -221,7 +221,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                     $this->jsQuoteEscape($category->getName())
                 );
             } else {
-                $result[] = sprintf("gtag('event', 'view_item', { 'currency': '%s', 'value': '%s', 'items': [
+                $result[] = sprintf("gtag('event', 'view_item', { 'currency': '%s', 'value': %s, 'items': [
                     { 'item_id': '%s', 'item_name': '%s' }
                 ] });",
                     'BRL',
@@ -305,11 +305,11 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                 "gtag('event', 'purchase', {
                     currency: \"%s\",
                     transaction_id: \"%s\",
-                    value: \"%s\",
+                    value: %s,
                     affiliation: \"%s\",
                     coupon: \"%s\",
-                    shipping: \"%s\",
-                    tax: \"%s\",
+                    shipping: %s,
+                    tax: %s,
                     items: mage_data_layer_products
                 });",
                 "BRL",
@@ -343,7 +343,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                         currency: \"BRL\",
                         paymentType: \"\",
                         discount: \"%s\",
-                        shipping: \"%s\",
+                        shipping: %s,
                         customer: {
                             type: \"%s\",
                             email: \"%s\",
@@ -363,7 +363,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
             $result[] = sprintf("
                 dataLayer.push({
                     event: \"purchase\",
-                    value: \"%s\",
+                    value: %s,
                     transactionID: \"%s\",
                     email: \"%s\"
                 });", number_format($order->getBaseGrandTotal(), 2, '.', ''),
