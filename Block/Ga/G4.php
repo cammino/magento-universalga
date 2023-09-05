@@ -343,6 +343,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                         currency: \"BRL\",
                         paymentType: \"\",
                         discount: \"%s\",
+                        coupon: \"%s\",
                         shipping: %s,
                         customer: {
                             type: \"%s\",
