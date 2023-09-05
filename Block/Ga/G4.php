@@ -343,6 +343,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                         currency: \"BRL\",
                         paymentType: \"\",
                         discount: \"%s\",
+                        coupon: \"%s\",
                         shipping: %s,
                         customer: {
                             type: \"%s\",
@@ -354,6 +355,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                 };", $this->jsQuoteEscape($order->getIncrementId()),
                     number_format($order->getBaseGrandTotal(), 2, '.', ''),
                     number_format($order->getDiscountAmount(), 2, '.', ''),
+                    $this->jsQuoteEscape($order->getCouponCode()),
                     number_format($order->getBaseShippingAmount(), 2, '.', ''),
                     $customerType,
                     $customerEmail,
