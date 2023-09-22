@@ -333,32 +333,26 @@ class Cammino_Googleanalytics_Block_Ga_Ua extends Cammino_Googleanalytics_Block_
                     event: \"purchase\",
                     value: \"%s\",
                     transactionID: \"%s\",
-                    email: \"%s\"
+                    email: \"%s\",
+                    first_name: \"%s\",
+                    last_name: \"%s\",
+                    dob: \"%s\",
+                    cep: \"%s\",
+                    phone: \"%s\",
+                    city: \"%s\",
+                    state: \"%s\",
+                    country: \"br\"
                 });", number_format($order->getBaseGrandTotal(), 2, '.', ''),
                     $this->jsQuoteEscape($order->getIncrementId()),
-                    $this->jsQuoteEscape($order->getCustomerEmail())
+                    $this->jsQuoteEscape($order->getCustomerEmail()),
+                    self::formatStringAcentosLowercase($customer->getFirstname()),
+                    self::formatStringAcentosLowercase($customer->getLastname()),
+                    self::formatRemoveSpecialCharacters($customerDob),
+                    self::formatRemoveSpecialCharacters($address->getPostcode()),
+                    self::formatRemoveSpecialCharacters($address->getTelephone()),
+                    self::formatStringAcentosLowercase($address->getCity()),
+                    self::getRegionSigla($address->getRegion())
                 );
-
-                if (!empty($customer->getFirstname())) {
-                    $result[] = sprintf("
-                        dataLayer.push({
-                            first_name: \"%s\",
-                            last_name: \"%s\",
-                            dob: \"%s\",
-                            cep: \"%s\",
-                            phone: \"%s\",
-                            city: \"%s\",
-                            state: \"%s\",
-                            country: br
-                        });",
-                        $this->formatStringAcentosLowercase($customer->getFirstname()),
-                        $this->formatStringAcentosLowercase($customer->getLastname()),
-                        $this->formateRemoveSpecialCharacters($customerDob),
-                        $this->formatRemoveSpecialCharacters($address->getZipcode()),
-                        $this->formatStringAcentosLowercase($address->getCity()),
-                        $this->getRegionSigla($address->getState())
-                    );
-                }
     
             }
             Mage::log($result, null, 'analytics.log');
