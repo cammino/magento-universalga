@@ -373,8 +373,78 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                     $this->jsQuoteEscape($order->getCustomerEmail())
                 );
 
+                if (!empty($customer->getFirstname())) {
+                    $result[] = sprintf("
+                        dataLayer.push({
+                            first_name: \"%s\",
+                            last_name: \"%s\",
+                            dob: \"%s\",
+                            cep: \"%s\",
+                            phone: \"%s\",
+                            city: \"%s\",
+                            state: \"%s\",
+                            country: br
+                        });",
+                        $this->formatStringAcentosLowercase($customer->getFirstname()),
+                        $this->formatStringAcentosLowercase($customer->getLastname()),
+                        $this->formateRemoveSpecialCharacters($customerDob),
+                        $this->formatRemoveSpecialCharacters($address->getZipcode()),
+                        $this->formatStringAcentosLowercase($address->getCity()),
+                        $this->getRegionSigla($address->getState())
+                    );
+                }
+    
+            }
+            Mage::log($result, null, 'analytics.log');
+            return implode("\n", $result);
+        } 
+    
+        private function formatStringAcentosLowercase($string){
+            return strtolower(preg_replace(array("/(á|à|ã|â|ä)/","/(Á|À|Ã|Â|Ä)/","/(é|è|ê|ë)/","/(É|È|Ê|Ë)/","/(í|ì|î|ï)/","/(Í|Ì|Î|Ï)/","/(ó|ò|õ|ô|ö)/","/(Ó|Ò|Õ|Ô|Ö)/","/(ú|ù|û|ü)/","/(Ú|Ù|Û|Ü)/","/(ñ)/","/(Ñ)/"),explode(" ","a A e E i I o O u U n N"),$string));
         }
-        return implode("\n", $result);
-    } 
-
-}
+        
+        private function formatRemoveSpecialCharacters($string) {
+            $string = str_replace(' ', '', $string);
+            return preg_replace('/[^A-Za-z0-9\-]/', '', $string);
+        }
+    
+        private function getRegionSigla($needle) {
+           $regions = [
+             ["Sigla" => "ac", "Nome" => "Acre"],
+             ["Sigla" => "al", "Nome" => "Alagoas"],
+             ["Sigla" => "ap", "Nome" => "Amapá"],
+             ["Sigla" => "am", "Nome" => "Amazonas"],
+             ["Sigla" => "ba", "Nome" => "Bahia"],
+             ["Sigla" => "ce", "Nome" => "Ceará"],
+             ["Sigla" => "df", "Nome" => "Distrito Federal"],
+             ["Sigla" => "es", "Nome" => "Espírito Santo"],
+             ["Sigla" => "go", "Nome" => "Goiás"],
+             ["Sigla" => "ma", "Nome" => "Maranhão"],
+             ["Sigla" => "mt", "Nome" => "Mato Grosso"],
+             ["Sigla" => "ms", "Nome" => "Mato Grosso do Sul"],
+             ["Sigla" => "mg", "Nome" => "Minas Gerais"],
+             ["Sigla" => "pa", "Nome" => "Pará"],
+             ["Sigla" => "pb", "Nome" => "Paraíba"],
+             ["Sigla" => "pr", "Nome" => "Paraná"],
+             ["Sigla" => "pe", "Nome" => "Pernambuco"],
+             ["Sigla" => "pi", "Nome" => "Piauí"],
+             ["Sigla" => "rj", "Nome" => "Rio de Janeiro"],
+             ["Sigla" => "rn", "Nome" => "Rio Grande do Norte"],
+             ["Sigla" => "rs", "Nome" => "Rio Grande do Sul"],
+             ["Sigla" => "ro", "Nome" => "Rondônia"],
+             ["Sigla" => "rr", "Nome" => "Roraima"],
+             ["Sigla" => "sc", "Nome" => "Santa Catarina"],
+             ["Sigla" => "sp", "Nome" => "São Paulo"],
+             ["Sigla" => "se", "Nome" => "Sergipe"],
+             ["Sigla" => "to", "Nome" => "Tocantins"]
+           ];
+           $sigla = '';
+           foreach($regions as $region) {
+             if($region['Nome'] == $needle) {
+               $sigla = $region['Sigla'];
+             }
+           }
+           return $sigla;
+        }
+    
+    }
