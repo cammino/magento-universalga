@@ -399,6 +399,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
         
         private function formatRemoveSpecialCharacters($string) {
             $string = str_replace(' ', '', $string);
+            $string = str_replace('-', '', $string);
             return preg_replace('/[^A-Za-z0-9\-]/', '', $string);
         }
     
