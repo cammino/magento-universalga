@@ -156,7 +156,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
         $product = Mage::getModel('catalog/product')->load($itemSession->getId());
         $productName = $this->jsQuoteEscape($product->getName());
         if (!empty(Mage::getStoreConfig('google/analytics/concatsku'))) {
-            $productName = $product . ' (' . $this->jsQuoteEscape($product->getSku()) . ')';
+            $productName = $productName . ' (' . $this->jsQuoteEscape($product->getSku()) . ')';
         }
 
         $result[] = sprintf("gtag('event', 'add_to_cart', { 'currency': '%s', 'value': %s, 'items': [
@@ -192,7 +192,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
         $product = Mage::getModel('catalog/product')->load($itemSession->getId());
         $productName = $this->jsQuoteEscape($product->getName());
         if (!empty(Mage::getStoreConfig('google/analytics/concatsku'))) {
-            $productName = $product . ' (' . $this->jsQuoteEscape($product->getSku()) . ')';
+            $productName = $productName . ' (' . $this->jsQuoteEscape($product->getSku()) . ')';
         }
 
         $result[] = sprintf("gtag('event', 'remove_from_cart', { 'currency': '%s', 'value': %s, 'items': [
@@ -221,7 +221,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
             $product = Mage::registry('current_product');
             $productName = $this->jsQuoteEscape($product->getName());
             if (!empty(Mage::getStoreConfig('google/analytics/concatsku'))) {
-                $productName = $product . ' (' . $this->jsQuoteEscape($product->getSku()) . ')';
+                $productName = $productName . ' (' . $this->jsQuoteEscape($product->getSku()) . ')';
             }
 
             if (Mage::registry('current_category') != null) {
@@ -302,6 +302,10 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                 $dataLayerSku = Mage::getStoreConfig('google/analytics/googleanalyticssku');
                 $productId = ($dataLayerSku ? $item->getSku() : $item->getProductId());
                 $productIds[] = $this->jsQuoteEscape($productId);
+                $productName = $this->jsQuoteEscape($item->getName());
+                if (!empty(Mage::getStoreConfig('google/analytics/concatsku'))) {
+                    $productName = $productName . ' (' . $this->jsQuoteEscape($item->getSku()) . ')';
+                }
 
                 $result[] = sprintf("mage_data_layer_products.push({
                     item_id: \"%s\",
@@ -311,7 +315,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                     currency: \"BRL\",
                     quantity: %s
                 });", $this->jsQuoteEscape($productId),
-                    $this->jsQuoteEscape($item->getName()),
+                    $productName,
                     number_format($item->getBasePrice(), 2, '.', ''),
                     number_format($item->getQtyOrdered(), 0, '', '')
                 );
