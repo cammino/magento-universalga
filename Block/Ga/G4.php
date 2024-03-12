@@ -107,12 +107,13 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                 $result[] = sprintf("mage_data_layer_products.push({
                     item_id: \"%s\",
                     item_name: \"%s\",
-                    item_category: \"\",
+                    item_category: \"%s\",
                     price: %s,
                     currency: \"BRL\",
                     quantity: %s
                 });", $this->jsQuoteEscape($productId),
                     $productName,
+                    Mage::getModel('catalog/category')->load($item->getProduct()->getCategoryIds()[0])->getName(),
                     number_format($item->getBasePrice(), 2, '.', ''),
                     number_format($item->getQty(), 0, '', '')
                 );
@@ -310,12 +311,13 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                 $result[] = sprintf("mage_data_layer_products.push({
                     item_id: \"%s\",
                     item_name: \"%s\",
-                    item_category: \"\",
+                    item_category: \"%s\",
                     price: %s,
                     currency: \"BRL\",
                     quantity: %s
                 });", $this->jsQuoteEscape($productId),
                     $productName,
+                    Mage::getModel('catalog/category')->load($item->getProduct()->getCategoryIds()[0])->getName(),
                     number_format($item->getBasePrice(), 2, '.', ''),
                     number_format($item->getQtyOrdered(), 0, '', '')
                 );
@@ -361,7 +363,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                         transactionId: \"%s\",
                         amount: \"%s\",
                         currency: \"BRL\",
-                        paymentType: \"\",
+                        paymentType: \"%s\",
                         discount: \"%s\",
                         coupon: \"%s\",
                         shipping: %s,
@@ -374,6 +376,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                     }
                 };", $this->jsQuoteEscape($order->getIncrementId()),
                     number_format($order->getBaseGrandTotal(), 2, '.', ''),
+                    $order->getPayment()->getMethodInstance()->getTitle(),
                     number_format($order->getDiscountAmount(), 2, '.', ''),
                     $this->jsQuoteEscape($order->getCouponCode()),
                     number_format($order->getBaseShippingAmount(), 2, '.', ''),
