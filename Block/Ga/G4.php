@@ -249,6 +249,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
             }
 
             $productPrice = $this->getProductPrice($product);
+            $originalPrice = $this->getOriginalPrice($product);
 
             $result[] = sprintf("
                 var google_tag_params = {
@@ -263,11 +264,13 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                     product: {
                         sku: \"%s\",
                         name: \"%s\",
+                        original_price: %s,
                         price: %s,
                         available: true
                     }
                 };", $this->jsQuoteEscape($product->getId()),
                     $productName,
+                    number_format($originalPrice, 2, '.', ''),
                     number_format($productPrice, 2, '.', '')
                 );
 
@@ -479,6 +482,12 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                 return 0;
             }
         }
+
+        public function getOriginalPrice($product) {
+            
+            return $product->getPrice() ? $product->getPrice() : 0;
+            
+        }
     
         public function getConfigurableProductPrice($product) {
             $conf = Mage::getModel('catalog/product_type_configurable')->setProduct($product);
@@ -492,7 +501,11 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                 endif;
             endforeach;
     
-            return $minVal != 9999999 ? $minVal : 0;
+            if ($product->getSpecialPrice()) {
+                return $product->getSpecialPrice();
+            } else {
+                return $minVal != 9999999 ? $minVal : 0;
+            }
         }
     
         public function getGroupedProductPrice($product) {
