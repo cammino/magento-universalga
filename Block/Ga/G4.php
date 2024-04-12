@@ -249,6 +249,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
             }
 
             $productPrice = $this->getProductPrice($product);
+            $productSpecialPrice = $this->getProductSpecialPrice($product);
 
             $result[] = sprintf("
                 var google_tag_params = {
@@ -264,11 +265,13 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                         sku: \"%s\",
                         name: \"%s\",
                         price: %s,
+                        sale_price: %s,
                         available: true
                     }
                 };", $this->jsQuoteEscape($product->getId()),
                     $productName,
-                    number_format($productPrice, 2, '.', '')
+                    number_format($productPrice, 2, '.', ''),
+                    number_format($productSpecialPrice, 2, '.', '')
                 );
 
         }
@@ -470,7 +473,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
             $productType = $product->getTypeId() != NULL ? $product->getTypeId() : $product->product_type;
     
             if ($productType == "simple" || $productType == "downloadable"){
-                return $product->getFinalPrice() ? $product->getFinalPrice() : 0;
+                return $product->getPrice() ? $product->getPrice() : 0;
             } else if ($productType == "grouped") {
                 return $this->getGroupedProductPrice($product);
             } else if ($productType == "configurable") {
@@ -478,6 +481,12 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
             } else {
                 return 0;
             }
+        }
+
+        public function getProductSpecialPrice($product) {
+            
+            return $product->getSpecialPrice() ? $product->getSpecialPrice() : 0;
+            
         }
     
         public function getConfigurableProductPrice($product) {
