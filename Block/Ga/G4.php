@@ -501,8 +501,8 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                 endif;
             endforeach;
     
-            if ($product->getSpecialPrice()) {
-                return $product->getSpecialPrice();
+            if ($product->getFinalPrice()) {
+                return $product->getFinalPrice();
             } else {
                 return $minVal != 9999999 ? $minVal : 0;
             }
