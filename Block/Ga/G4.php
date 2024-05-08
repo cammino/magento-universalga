@@ -330,6 +330,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                 "gtag('event', 'purchase', {
                     currency: \"%s\",
                     transaction_id: \"%s\",
+                    customer_email: \"%s\",
                     value: %s,
                     affiliation: \"%s\",
                     coupon: \"%s\",
@@ -339,6 +340,7 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
                 });",
                 "BRL",
                 $order->getIncrementId(),
+                $order->getCustomerEmail(),
                 number_format($order->getBaseGrandTotal(), 2, '.', ''),
                 $this->jsQuoteEscape(Mage::app()->getStore()->getFrontendName()),
                 $this->jsQuoteEscape($order->getCouponCode()),
