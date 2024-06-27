@@ -19,6 +19,14 @@
     </global>
     <frontend>
 		<events>
+			<controller_action_predispatch_amcart_ajax_index>
+				<observers>
+					<googleanalytics_cart_add>
+						<class>googleanalytics/observer</class>
+						<method>addToCart</method>
+					</googleanalytics_cart_add>
+				</observers>
+			</controller_action_predispatch_amcart_ajax_index>
 			<controller_action_predispatch_checkout_cart_add>
 				<observers>
 					<googleanalytics_cart_add>
