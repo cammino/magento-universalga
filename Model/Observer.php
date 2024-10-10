@@ -16,15 +16,17 @@ class Cammino_Googleanalytics_Model_Observer extends Mage_GoogleAnalytics_Model_
 	public function deleteFromCart() {
 		$cart = Mage::getSingleton('checkout/cart');
 		$itemId = Mage::app()->getRequest()->getParam('id', 0);
-		$item = $cart->getQuote()->getItemById($itemId);
-		$product = $item->getProduct();
+		$item = $cart->getQuote() ? $cart->getQuote()->getItemById($itemId) : null;
 
-		Mage::getModel('core/session')->setGaDeleteProductFromCart(
-			new Varien_Object(array(
-				'id' => $product->getId(),
-				'qty' => $item->getQty()
-			))
-		);
+		if ($item) {
+			$product = $item->getProduct();
+			Mage::getModel('core/session')->setGaDeleteProductFromCart(
+				new Varien_Object(array(
+					'id' => $product->getId(),
+					'qty' => $item->getQty()
+				))
+			);
+		}
 	}
 
 }
