@@ -13,7 +13,16 @@ class Cammino_Googleanalytics_Block_Ga_G4 extends Cammino_Googleanalytics_Block_
             $optPageURL = ", '{$this->jsQuoteEscape($pageName)}'";
         }
 
-        $result[] = "gtag('config', '{$this->jsQuoteEscape($accountId)}');";
+        $customerSession = Mage::getSingleton('customer/session');
+        if ($customerSession->isLoggedIn()) {
+            $customerId = $customerSession->getCustomerId();
+            $result[] = "gtag('config', '{$this->jsQuoteEscape($accountId)}', { 'user_id': '{$customerId}' });";
+            $result[] = "window._edrone = window._edrone || {};";
+            $result[] = "_edrone.user_id = '{$customerId}';";
+        } else {
+            $result[] = "gtag('config', '{$this->jsQuoteEscape($accountId)}');";
+            $result[] = "window._edrone = window._edrone || {};";
+        }
 
         $result[] = $custom->getCustomEvents();
         $result[] = $this->_getProductDetailsCode();
