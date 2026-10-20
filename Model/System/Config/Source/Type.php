@@ -9,11 +9,11 @@ class Cammino_Googleanalytics_Model_System_Config_Source_Type extends Mage_Googl
     {
         return array(
             array(
-                'value' => Mage_GoogleAnalytics_Helper_Data::TYPE_UNIVERSAL,
+                'value' => 'universal',
                 'label' => Mage::helper('googleanalytics')->__('Universal Analytics')
             ),
             array(
-                'value' => Mage_GoogleAnalytics_Helper_Data::TYPE_ANALYTICS,
+                'value' => 'analytics',
                 'label' => Mage::helper('googleanalytics')->__('Google Analytics')
             ),
             array(
